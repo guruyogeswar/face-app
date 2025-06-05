@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="css\style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="forms-wrapper">
+        <div class="forms-container">
+        <div class="form-container" id="signup-form">
+            <br>
+            <h1>Sign Up</h1>
+            <p>Create your account</p>
+            <div class="social-login">
+                <button class="social-btn google"><i class="fab fa-google"></i> Sign up with Google</button>
+                <button class="social-btn apple"><i class="fab fa-apple"></i> Sign up with Apple</button>
+            </div>
+            <div class="divider">or</div>
+            <form>
+                <div class="input-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="Enter your name" required>
+                </div>
+                <div class="input-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Create a password" required>
+                </div>
+                <div class="input-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                </div>
+                <button type="button" id="signup-btn" class="btn-sign">Create Account</button>
+            </form>
+            <div class="switch-form">
+                Already have an account? <a href="#" id="switch-to-login">Log in</a>
+            </div>
+        </div>
+    </div>
+    </div>
+    <footer class="logsign"><br></footer>
+    <script src="script.js"></script>
+</body>
+</html>

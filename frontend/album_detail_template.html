@@ -1,0 +1,87 @@
+<!-- This is a template structure. JS will generate this with dynamic data. -->
+<!-- It will be injected into #album-detail-view in albums.html -->
+
+<!-- Breadcrumbs and Album Title -->
+<div class="mb-6">
+    <nav class="text-sm mb-2" aria-label="Breadcrumb">
+        <ol class="list-none p-0 inline-flex space-x-2">
+            <li class="flex items-center">
+                <a href="#" id="breadcrumb-albums" class="text-primary hover:underline">Albums</a>
+            </li>
+            <li class="flex items-center">
+                <span class="text-gray-400 mx-2">/</span>
+                <span id="breadcrumb-album-name" class="text-gray-700 font-semibold"><!-- Album Name Here --></span>
+            </li>
+        </ol>
+    </nav>
+    <div class="flex flex-col sm:flex-row justify-between items-center">
+        <h1 id="detail-album-title" class="text-3xl font-semibold text-dark-color mb-3 sm:mb-0"><!-- Album Name Here --></h1>
+        <div class="flex space-x-2">
+             <button id="uploadToAlbumBtn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 text-sm flex items-center space-x-2">
+                <i class="fas fa-upload"></i>
+                <span>Upload Photos</span>
+            </button>
+            <!-- This input is kept hidden and triggered by the button -->
+            <input type="file" id="uploadPhotosInput" multiple accept="image/*" class="hidden">
+        </div>
+    </div>
+</div>
+
+<!-- Action Bar (appears when photos are selected) -->
+<div id="photo-action-bar" class="hidden sticky top-16 bg-white/80 backdrop-blur-md shadow-md rounded-lg p-3 mb-6 z-40 flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+    <span id="selection-count" class="text-sm font-medium text-gray-700">0 photos selected</span>
+    <div class="flex space-x-2">
+        <button id="downloadSelectedBtn" class="text-sm px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center space-x-1.5">
+            <i class="fas fa-download"></i><span>Download</span>
+        </button>
+        <button id="deleteSelectedBtn" class="text-sm px-3 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 flex items-center space-x-1.5">
+            <i class="fas fa-trash"></i><span>Delete</span>
+        </button>
+        <button id="clearSelectionBtn" class="text-sm px-3 py-1.5 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center space-x-1.5">
+            <i class="fas fa-times-circle"></i><span>Clear</span>
+        </button>
+    </div>
+</div>
+
+
+<!-- Photo Grid Loading Skeleton -->
+<div id="photo-grid-loader" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" style="display: none;">
+    <!-- Skeleton Item Repeater -->
+    <div class="aspect-square bg-gray-300 rounded-lg animate-pulse"></div>
+    <div class="aspect-square bg-gray-300 rounded-lg animate-pulse"></div>
+    <div class="aspect-square bg-gray-300 rounded-lg animate-pulse hidden sm:block"></div>
+    <div class="aspect-square bg-gray-300 rounded-lg animate-pulse hidden md:block"></div>
+    <div class="aspect-square bg-gray-300 rounded-lg animate-pulse hidden lg:block"></div>
+    <div class="aspect-square bg-gray-300 rounded-lg animate-pulse hidden xl:block"></div>
+</div>
+
+<!-- Photo Grid -->
+<div id="photo-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+    <!-- Photo items will be injected here by JS:
+    <div class="photo-item group relative aspect-square rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-shadow duration-300">
+        <img src="https://placehold.co/300x300/e0e0e0/777?text=Photo" alt="Photo Name" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300"></div>
+        <input type="checkbox" class="absolute top-2 right-2 h-5 w-5 rounded text-primary focus:ring-primary-dark opacity-0 group-hover:opacity-100 photo-checkbox transition-opacity duration-300" data-photo-id="photo_id_here">
+        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/50 to-transparent">
+            <p class="text-white text-xs truncate">photo_name.jpg</p>
+        </div>
+    </div>
+    -->
+</div>
+<p id="no-photos-message" style="display: none;" class="text-center text-gray-color py-10 text-lg">
+    <i class="fas fa-camera fa-3x mb-4 text-gray-400"></i><br>
+    This album is empty. <br>Upload some photos to get started!
+</p>
+
+<!-- Lightbox Modal for viewing single photo -->
+<div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[100]" style="display: none;">
+    <div class="bg-white p-4 rounded-lg shadow-2xl max-w-4xl max-h-[90vh] w-auto relative flex flex-col">
+        <button id="close-lightbox" class="absolute -top-3 -right-3 text-white bg-red-500 rounded-full h-8 w-8 flex items-center justify-center hover:bg-red-600 z-10 focus:outline-none leading-none text-2xl pt-px">&times;</button>
+        <img id="lightbox-image" src="" alt="Lightbox image" class="max-w-full max-h-[75vh] object-contain mx-auto mb-3">
+        <div id="lightbox-caption" class="text-center text-sm text-gray-700 mt-1"><!-- Photo name/caption --></div>
+        <div class="flex justify-between items-center mt-auto pt-3">
+            <button id="lightbox-prev" class="text-primary hover:text-primary-dark text-2xl p-2 disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-chevron-left"></i></button>
+            <button id="lightbox-next" class="text-primary hover:text-primary-dark text-2xl p-2 disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+</div>

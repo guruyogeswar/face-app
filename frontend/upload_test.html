@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test File Upload & Face Search</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        .container { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
+        h2 { border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        input { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; }
+        button { padding: 10px 15px; border: none; background-color: #007bff; color: white; cursor: pointer; border-radius: 4px; }
+        button:disabled { background-color: #ccc; }
+        #status, #uploadResult, #searchResult { margin-top: 15px; padding: 10px; background-color: #f0f0f0; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+    <h1>Uploader & Face Recognition Test Page</h1>
+
+    <div class="container">
+        <h2>Step 1: Authenticate</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="demo" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="demo123" required>
+            <button type="submit">Login</button>
+        </form>
+        <div id="status">Login status will appear here.</div>
+    </div>
+
+    <div class="container">
+        <h2>Step 2: Upload Files & Generate Embeddings</h2>
+        <form id="uploadForm">
+            <label for="album">Album Name (e.g., "family-reunion"):</label>
+            <input type="text" id="album" name="album" value="my-test-album" required>
+            
+            <label for="file">Choose file(s):</label>
+            <input type="file" id="uploadFileInput" name="files" required multiple>
+            
+            <button type="submit" id="uploadButton" disabled>Upload</button>
+        </form>
+        <div id="uploadResult">Upload result will appear here.</div>
+    </div>
+    
+    <div class="container">
+        <h2>Step 3: Find Matches in an Album</h2>
+        <form id="searchForm">
+            <label for="searchAlbumName">Album Name (must match an album above):</label>
+            <input type="text" id="searchAlbumName" name="album" value="my-test-album" required>
+
+            <label for="searchFile">Choose a face image to find matches for:</label>
+            <input type="file" id="searchFileInput" name="file" required>
+            
+            <button type="submit">Find Similar Faces</button>
+        </form>
+        <div id="searchResult">Search results will appear here.</div>
+    </div>
+
+<script>
+    // --- Global Variables and Element References ---
+    let authToken = null;
+    const loginForm = document.getElementById('loginForm');
+    const uploadForm = document.getElementById('uploadForm');
+    const searchForm = document.getElementById('searchForm');
+    
+    const uploadButton = document.getElementById('uploadButton');
+    const statusDiv = document.getElementById('status');
+    const uploadResultDiv = document.getElementById('uploadResult');
+    const searchResultDiv = document.getElementById('searchResult');
+
+    // --- Event Listener for Login ---
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = loginForm.username.value;
+        const password = loginForm.password.value;
+        statusDiv.textContent = 'Logging in...';
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Invalid credentials');
+            
+            authToken = data.token;
+            statusDiv.textContent = `Login successful!`;
+            uploadButton.disabled = false;
+        } catch (error) {
+            statusDiv.textContent = `Login failed: ${error.message}`;
+            authToken = null;
+            uploadButton.disabled = true;
+        }
+    });
+
+    // --- Event Listener for Upload ---
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!authToken) {
+            uploadResultDiv.textContent = 'Error: You must log in first.';
+            return;
+        }
+
+        const fileInput = document.getElementById('uploadFileInput');
+        const albumInput = document.getElementById('album');
+        if (fileInput.files.length === 0) {
+            uploadResultDiv.textContent = 'Please select one or more files to upload.';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('album', albumInput.value);
+        for (const file of fileInput.files) {
+            formData.append('files', file);
+        }
+
+        uploadResultDiv.textContent = `Uploading ${fileInput.files.length} file(s) and generating embeddings... This may take a moment.`;
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                body: formData
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to upload files');
+            uploadResultDiv.textContent = `Upload complete!\n\nResponse:\n${JSON.stringify(data, null, 2)}`;
+        } catch (error) {
+            uploadResultDiv.textContent = `Upload failed: ${error.message}`;
+        }
+    });
+
+    // --- Event Listener for Face Search ---
+    searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById('searchFileInput');
+        const albumInput = document.getElementById('searchAlbumName');
+
+        if (fileInput.files.length === 0) {
+            searchResultDiv.textContent = 'Please select a face image to search for.';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('album', albumInput.value);
+        formData.append('file', fileInput.files[0]);
+
+        searchResultDiv.textContent = 'Searching for matches...';
+
+        try {
+            const response = await fetch('/api/find-matches', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to search for faces');
+            searchResultDiv.textContent = `Search complete!\n\nResponse:\n${JSON.stringify(data, null, 2)}`;
+        } catch (error) {
+            searchResultDiv.textContent = `Search failed: ${error.message}`;
+        }
+    });
+</script>
+
+</body>
+</html>

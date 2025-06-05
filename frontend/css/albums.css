@@ -1,0 +1,352 @@
+/* css/albums.css */
+/* This file contains styles SPECIFIC to albums.html content sections like tabs, grids, photo items. */
+/* General styles, header, nav, footer, utilities are now in style.css */
+
+/* Main Content Area for Albums Page */
+.page-main-content { 
+    padding-top: 2rem; 
+    padding-bottom: 2rem; 
+    min-height: calc(100vh - 10rem); /* Adjust based on header/footer height */
+}
+
+/* Login Prompt Card (if uniquely styled for albums page beyond general .card) */
+.login-prompt-card {
+    text-align: center;
+    max-width: 28rem;
+    margin: 2.5rem auto 0 auto;
+    padding: 2rem; 
+}
+.card-icon-large { font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; }
+.card-title-large { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.75rem; }
+.card-text { color: var(--gray-color-text); margin-bottom: 1.5rem; }
+
+
+/* Tab Navigation for Album Views */
+.tab-nav-container {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    border-bottom: 1px solid var(--gray-200); /* var from style.css */
+}
+.nav-tab-button {
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center; 
+    padding: 0.75rem 1.5rem; 
+    font-weight: 500; 
+    color: var(--gray-700);
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-top-left-radius: var(--border-radius-lg);
+    border-top-right-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    width: 100%; 
+    margin-bottom: 0.25rem; 
+}
+.nav-tab-button:last-child { margin-bottom: -1px; /* To align with bottom border */ }
+
+.nav-tab-button:hover { background-color: var(--indigo-50); color: var(--primary-color); }
+.nav-tab-button.active-tab {
+    background-color: var(--indigo-100);
+    color: var(--primary-color);
+    font-weight: 600;
+    border-bottom-color: var(--primary-color);
+}
+
+@media (min-width: 640px) { /* sm breakpoint */
+    .tab-nav-container {
+        flex-direction: row;
+        justify-content: center; 
+    }
+    .nav-tab-button { width: auto; margin-bottom: -1px; }
+    .nav-tab-button + .nav-tab-button { margin-left: 0; } 
+}
+
+
+/* View Sections within Albums Page */
+.view-section { /* Base for content areas */ }
+.section-header { /* General section header is in style.css, this can be for specific overrides if needed */
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+.section-header .section-title { margin-bottom: 1rem; }
+
+@media (min-width: 640px) { /* sm breakpoint */
+    .section-header {
+        flex-direction: row;
+        align-items: center;
+    }
+    .section-header .section-title { margin-bottom: 0; }
+}
+.section-title { font-size: 1.875rem; font-weight: 600; color: var(--dark-color); }
+
+
+/* Specific form cards on albums page if different from global .card */
+.create-album-form-card { margin-bottom: 1.5rem; /* from albums.css */ } 
+.find-images-form-card { max-width: 32rem; margin-left: auto; margin-right: auto; }
+
+
+/* Album Grids and Search Results Grids */
+.album-grid-skeleton, .album-grid-main {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem; 
+    margin-bottom: 1.5rem; 
+}
+.search-results-skeleton, .search-results-grid-main {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem; 
+    margin-top: 1.5rem; 
+}
+
+@media (min-width: 640px) { /* sm */
+    .album-grid-skeleton, .album-grid-main { grid-template-columns: repeat(2, 1fr); }
+    .search-results-skeleton, .search-results-grid-main { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 768px) { /* md */
+    .album-grid-skeleton, .album-grid-main { grid-template-columns: repeat(3, 1fr); }
+    .search-results-skeleton, .search-results-grid-main { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 1024px) { /* lg */
+    .album-grid-skeleton, .album-grid-main { grid-template-columns: repeat(4, 1fr); }
+    .search-results-skeleton, .search-results-grid-main { grid-template-columns: repeat(5, 1fr); }
+}
+@media (min-width: 1280px) { /* xl for albums grid (new) */
+    .album-grid-skeleton, .album-grid-main { grid-template-columns: repeat(5, 1fr); }
+    .search-results-skeleton, .search-results-grid-main { grid-template-columns: repeat(6, 1fr); }
+}
+
+
+/* Skeleton Styles for Album Grids */
+.skeleton-card { /* Used by album grid loader */
+    background-color: var(--white-color);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+
+.skeleton-image { width: 100%; height: 12rem; background-color: var(--gray-300); }
+.skeleton-text-container { padding: 1rem; }
+.skeleton-line-lg { height: 1.5rem; background-color: var(--gray-300); border-radius: 0.25rem; width: 75%; margin-bottom: 0.5rem; }
+.skeleton-line-md { height: 1rem; background-color: var(--gray-300); border-radius: 0.25rem; width: 50%; margin-bottom: 0.25rem; }
+.skeleton-line-sm { height: 1rem; background-color: var(--gray-300); border-radius: 0.25rem; width: 25%; }
+
+.skeleton-image-square { /* Used by search results loader */
+    aspect-ratio: 1 / 1;
+    background-color: var(--gray-300);
+    border-radius: var(--border-radius-lg);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+/* Skeleton visibility helpers */
+.skeleton-hidden-sm, .skeleton-hidden-md, .skeleton-hidden-lg, .skeleton-hidden-xl { display: none; }
+@media (min-width: 640px) { .skeleton-hidden-sm { display: block; } }
+@media (min-width: 768px) { .skeleton-hidden-md { display: block; } } 
+@media (min-width: 1024px) { .skeleton-hidden-lg { display: block; } }
+@media (min-width: 1280px) { .skeleton-hidden-xl { display: block; } }
+
+
+/* Empty State Messages for Album Grids */
+.empty-state-message {
+    text-align: center;
+    color: var(--gray-color-text);
+    padding: 2.5rem 0; 
+    font-size: 1.125rem; 
+}
+.empty-state-icon { font-size: 3rem; margin-bottom: 1rem; color: var(--gray-400); }
+
+/* Search Status Message for Find Images View */
+.search-status { margin-top: 1.5rem; text-align: center; }
+
+/* Album Card Specifics for Album List - UPDATED SECTION */
+.album-card-item {
+    background-color: var(--white-color);
+    border-radius: var(--border-radius-lg); /* e.g., 0.5rem or 8px */
+    box-shadow: var(--shadow-md); /* A balanced base shadow */
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure cards in a grid row can align if text content varies */
+}
+
+.album-card-item:hover {
+    transform: translateY(-4px); /* Lift effect */
+    box-shadow: var(--shadow-xl); /* More pronounced shadow on hover */
+}
+
+/* The image container div (first child of .album-card-item) is styled by Tailwind:
+   class="w-full h-48 bg-gray-200 overflow-hidden" in JS.
+   The image itself is also styled by Tailwind:
+   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" in JS.
+   The 'group-hover:scale-105' on the img tag, when .album-card-item (the group) is hovered, will scale the image.
+   The CSS below is mostly to ensure display block for img or add minor fallbacks if needed.
+*/
+.album-card-item img {
+    display: block; /* Good practice for images to remove potential bottom spacing */
+    width: 100%; /* Ensure it fills the container if Tailwind classes were missed */
+    height: 100%; /* Ensure it fills the container if Tailwind classes were missed */
+    object-fit: cover; /* Ensure this is applied if Tailwind class was missed */
+}
+
+/* The text content container (second div child of .album-card-item) 
+   has Tailwind class 'p-4' applied in JS.
+*/
+.album-card-item > div:last-of-type { /* Targets the text content area, assuming it's the last div */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allows this part to grow and push metadata down if card heights are aligned */
+    padding: 1rem; /* Matches p-4 from JS. Can be var(--space-4) if you have space vars */
+}
+
+.album-card-item h3 {
+    /* Tailwind 'text-lg font-semibold text-dark-color truncate mb-1' from JS primarily styles this. */
+    /* Add specific overrides or fallbacks if needed. */
+    line-height: 1.4; /* Slightly adjust line height for readability */
+    margin-bottom: 0.25rem; /* Matches mb-1. Can be var(--space-1) */
+}
+
+.album-card-item p {
+    /* Tailwind 'text-xs text-gray-500' from JS primarily styles this. */
+    line-height: 1.5;
+    margin-bottom: 0.125rem; /* Subtle spacing for paragraph metadata if multiple */
+}
+.album-card-item p:last-child {
+    margin-bottom: 0; /* No margin for the very last paragraph */
+}
+/* END OF UPDATED SECTION for .album-card-item */
+
+
+/* Photo Item (inside Album Detail View) */
+.photo-item { 
+    position: relative; 
+    cursor: pointer; 
+    aspect-ratio: 1 / 1; /* Ensure square photos */
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background-color: var(--gray-200); /* Placeholder bg */
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.3s ease;
+}
+.photo-item:hover {
+    box-shadow: var(--shadow-md);
+}
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure image covers the square */
+}
+.photo-item .photo-checkbox {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.25rem; /* h-5 w-5 */
+    height: 1.25rem;
+    border-radius: var(--border-radius-lg); /* Rounded-md */
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 10;
+    accent-color: var(--primary-color); /* Modern way to color checkbox */
+}
+.photo-item:hover .photo-checkbox,
+.photo-item .photo-checkbox:checked,
+.photo-item.selected-item .photo-checkbox { /* Ensure checkbox is visible when selected too */
+    opacity: 1;
+}
+
+.photo-item.selected-item::before { /* Using ::before for overlay to not interfere with checkbox */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 3px solid var(--primary-color);
+    border-radius: var(--border-radius-lg); 
+    pointer-events: none;
+    z-index: 5; /* Below checkbox */
+    box-sizing: border-box;
+}
+/* Overlay for hover effects like magnifying glass */
+.photo-item .absolute.inset-0 {
+    transition: background-color 0.3s ease;
+}
+.photo-item:hover .absolute.inset-0 {
+    background-color: rgba(0,0,0,0.2);
+}
+.photo-item .fa-search-plus {
+    transition: opacity 0.3s ease;
+}
+
+
+/* Sticky action bar for selected photos */
+#photo-action-bar {
+    /* Class 'sticky' and 'hidden' are toggled by JS */
+    /* Base styles when it's visible */
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly more opaque */
+    backdrop-filter: blur(8px);
+    padding: 0.75rem 1rem; /* Adjusted padding */
+    box-shadow: var(--shadow-md);
+    z-index: 40; 
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 1.5rem; /* More space */
+    /* Flex handled by Tailwind classes in HTML, but can be added here if needed */
+    /* display: flex; justify-content: space-between; align-items: center; */
+}
+#photo-action-bar.sticky {
+    position: sticky;
+    top: calc(4rem + 1rem); /* Header height (approx from header-main padding + img) + spacing */
+}
+
+
+/* Lightbox Modal Styles (specific for photo viewing) */
+#lightbox-modal {
+    /* display: none; controlled by JS */
+    /* position, bg, z-index already in style.css general modal, but lightbox has higher z */
+    z-index: 1050; /* Higher than other elements like sticky bar */
+}
+#lightbox-modal .bg-white { /* The content box of the lightbox */
+    max-width: 90vw; /* Responsive width */
+    max-height: 90vh; /* Responsive height */
+    width: auto; /* Let image dictate width up to max */
+    height: auto; /* Let image dictate height up to max */
+    display: flex; /* Added for better internal layout */
+    flex-direction: column; /* Stack image and controls */
+}
+#lightbox-image {
+    display: block; /* Remove extra space below image */
+    margin: auto; /* Center image if container is larger */
+    max-width: 100%; 
+    max-height: calc(90vh - 100px); /* Reserve space for caption & controls */
+    object-fit: contain;
+}
+#lightbox-caption {
+    padding: 0.5rem 0;
+    text-align: center;
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    word-break: break-all; /* For long filenames */
+}
+#lightbox-modal .absolute.-top-3.-right-3 { /* Close button styling */
+    width: 2rem; height: 2rem; font-size: 1.25rem;
+}
+#lightbox-prev, #lightbox-next { /* Nav buttons */
+    color: var(--primary-color);
+    padding: 0.5rem;
+    border-radius: var(--border-radius-full);
+    transition: background-color 0.2s ease;
+}
+#lightbox-prev:hover:not(:disabled), #lightbox-next:hover:not(:disabled) {
+    background-color: var(--indigo-100);
+}
+#lightbox-prev:disabled, #lightbox-next:disabled {
+    color: var(--gray-400);
+    cursor: not-allowed;
+}

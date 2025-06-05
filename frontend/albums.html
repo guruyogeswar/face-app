@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Albums - Aadishree (Blended)</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/albums.css"/> <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Basic Tailwind configuration (from V1)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        'primary-dark': '#4f46e5',
+                        'primary-light': '#818cf8',
+                        secondary: '#10b981',
+                        'dark-color': '#1f2937', // Used by V1 body, footer
+                        'light-color': '#f9fafb', // Used by V1 body
+                        'gray-color': '#6b7280',  // Used by V1
+                        'light-gray': '#e5e7eb', // Used by V1
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Small style to ensure body takes Tailwind styles, but header is not overly affected */
+        /* You might need more specific scoping if css/style.css has very broad selectors */
+        body.tailwind-body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* light-color from tailwind config */
+            color: #1f2937; /* dark-color from tailwind config */
+        }
+    </style>
+</head>
+<body class="tailwind-body"> 
+    <header class="header-main">
+        <div class="container header-container">
+            <nav class="header-nav">
+                <div class="header-logo">
+                    <a href="index.html">
+                        <img src="uploads/Screenshot%202025-06-03%20110359.png" alt="Logo" />
+                    </a>
+                </div>
+                <div class="nav-links-desktop" id="navLinks">
+                    <a href="index.html" class="nav-link-item">Home</a>
+                    <a href="features.html" class="nav-link-item">Features</a>
+                    <a href="albums.html" class="nav-link-item active">Albums</a>
+                    <a href="pricing.html" class="nav-link-item">Pricing</a>
+                    <a href="contact.html" class="nav-link-item">Contact Us</a>
+                </div>
+                <div class="auth-links-desktop">
+                    <a href="login.html" id="loginBtnNav" class="btn btn-secondary btn-sm">Log In</a>
+                    <a href="signin.html" id="signinBtnNav" class="btn btn-primary btn-sm">Sign Up</a>
+                    <div id="profileDropdownContainer" class="profile-dropdown" style="display: none;">
+                        <button id="profileDropdownButton" class="profile-dropdown-button">
+                            <span id="profileInitials" class="profile-initials-text">JD</span>
+                        </button>
+                        <div id="profileDropdownMenu" class="profile-dropdown-menu">
+                            <div class="profile-dropdown-header">
+                                <div class="profile-user-info">
+                                    <div class="profile-initials-avatar">
+                                        <span id="dropdownProfileInitials">JD</span>
+                                    </div>
+                                    <div>
+                                        <p id="dropdownUserName" class="profile-user-name">John Doe</p>
+                                        <p id="dropdownUserEmail" class="profile-user-email">john.doe@example.com</p>
+                                    </div>
+                                </div>
+                                <a href="#" id="manageAccountLink" class="profile-manage-link">Manage your Account (soon)</a>
+                            </div>
+                            <div class="profile-dropdown-section">
+                                </div>
+                            <div class="profile-dropdown-footer">
+                                <a href="#" id="logoutBtnDropdown" class="profile-dropdown-item logout-link">
+                                    <i class="fas fa-sign-out-alt icon-prefix"></i>Sign out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hamburger-menu-container">
+                    <button id="hamburger" aria-label="Open menu" class="hamburger-button">
+                        <i class="fas fa-bars icon-menu-open"></i>
+                        <i class="fas fa-times icon-menu-close" style="display:none;"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+        <div class="mobile-nav-menu" id="mobileNavLinks">
+            <a href="index.html" class="nav-link-item-mobile">Home</a>
+            <a href="features.html" class="nav-link-item-mobile">Features</a>
+            <a href="albums.html" class="nav-link-item-mobile active">Albums</a>
+            <a href="pricing.html" class="nav-link-item-mobile">Pricing</a>
+            <a href="contact.html" class="nav-link-item-mobile">Contact Us</a>
+            <div class="mobile-auth-section">
+                <a href="login.html" id="loginBtnNavMobile" class="btn btn-secondary btn-sm btn-full-width btn-margin-bottom">Log In</a>
+                <a href="signin.html" id="signinBtnNavMobile" class="btn btn-primary btn-sm btn-full-width btn-margin-bottom">Sign Up</a>
+                <div id="profileContainerMobile" style="display:none;">
+                    <div class="profile-user-info-mobile">
+                        <div class="profile-initials-avatar-sm">
+                           <span id="profileInitialsMobile">JD</span>
+                        </div>
+                        <div>
+                           <p id="userNameMobile" class="profile-user-name-sm">John Doe</p>
+                           <p id="userEmailMobile" class="profile-user-email-sm">john.doe@example.com</p>
+                        </div>
+                    </div>
+                    <a href="#" id="logoutBtnNavMobile" class="btn btn-danger-outline btn-sm btn-full-width">
+                        <i class="fas fa-sign-out-alt icon-prefix"></i>Sign Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 min-h-screen"> 
+        <div id="login-prompt" style="display: none;" class="text-center p-8 bg-white rounded-xl shadow-lg max-w-md mx-auto mt-10">
+            <i class="fas fa-sign-in-alt fa-3x text-primary mb-4"></i>
+            <h2 class="text-2xl font-semibold mb-3">Please Log In</h2>
+            <p class="text-gray-color mb-6">You need to be logged in to manage your albums and find images.</p>
+            <a href="login.html" class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors">Go to Login</a>
+        </div>
+
+        <div id="albums-main-content" style="display: none;">
+            <div class="mb-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-0 border-b border-gray-200 pb-0">
+                <button data-view="manage-albums" class="nav-tab-button active-tab flex items-center space-x-2 px-6 py-3 font-medium text-gray-700 hover:bg-indigo-100 hover:text-primary transition-colors w-full sm:w-auto justify-center">
+                    <i class="fas fa-images"></i>
+                    <span>Manage Albums</span>
+                </button>
+                <button data-view="find-images" class="nav-tab-button flex items-center space-x-2 px-6 py-3 font-medium text-gray-700 hover:bg-indigo-100 hover:text-primary transition-colors w-full sm:w-auto justify-center">
+                    <i class="fas fa-search"></i>
+                    <span>Find Your Images</span>
+                </button>
+            </div>
+            
+            <div id="view-container">
+                <section id="manage-albums-view" class="view-section">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+                        <h2 class="text-3xl font-semibold text-dark-color mb-4 sm:mb-0">Your Albums</h2>
+                        <button id="createAlbumBtn" class="bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-colors flex items-center space-x-2">
+                            <i class="fas fa-plus"></i>
+                            <span>Create New Album</span>
+                        </button>
+                    </div>
+                    <div id="createAlbumFormContainer" style="display: none;" class="mb-6 p-6 bg-white rounded-xl shadow-lg">
+                        <form id="createAlbumForm" class="space-y-4">
+                            <div>
+                                <label for="newAlbumName" class="block text-sm font-medium text-gray-700 mb-1">Album Name:</label>
+                                <input type="text" id="newAlbumName" name="newAlbumName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g., Summer Vacation 2024">
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" id="cancelCreateAlbumBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
+                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark">Save Album</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="album-grid-loader" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6" style="display: none;">
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+                            <div class="w-full h-48 bg-gray-300"></div>
+                            <div class="p-4">
+                                <div class="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/2 mb-1"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                         <div class="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+                            <div class="w-full h-48 bg-gray-300"></div>
+                            <div class="p-4">
+                                <div class="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/2 mb-1"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                         <div class="bg-white rounded-xl shadow-md overflow-hidden animate-pulse hidden sm:block">
+                            <div class="w-full h-48 bg-gray-300"></div>
+                            <div class="p-4">
+                                <div class="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/2 mb-1"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                         <div class="bg-white rounded-xl shadow-md overflow-hidden animate-pulse hidden lg:block">
+                            <div class="w-full h-48 bg-gray-300"></div>
+                            <div class="p-4">
+                                <div class="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/2 mb-1"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="album-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        </div>
+                    <p id="no-albums-message" style="display: none;" class="text-center text-gray-color py-10 text-lg">
+                        <i class="fas fa-folder-open fa-3x mb-4 text-gray-400"></i><br>
+                        You don't have any albums yet. <br>Click "Create New Album" to get started!
+                    </p>
+                </section>
+
+                <section id="find-images-view" class="view-section" style="display: none;">
+                    <h2 class="text-3xl font-semibold text-dark-color mb-6">Find Your Images by Face</h2>
+                    <form id="faceSearchForm" class="p-6 bg-white rounded-xl shadow-lg space-y-6 max-w-lg mx-auto">
+                        <div>
+                            <label for="searchAlbumSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Album to Search In:</label>
+                            <select id="searchAlbumSelect" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary bg-white">
+                                </select>
+                        </div>
+                        <div>
+                            <label for="faceSearchFile" class="block text-sm font-medium text-gray-700 mb-1">Upload Image with Face to Find:</label>
+                            <input type="file" id="faceSearchFile" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-primary hover:file:bg-indigo-100 cursor-pointer border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="flex justify-start">
+                            <button type="submit" class="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark transition-colors flex items-center space-x-2">
+                                <i class="fas fa-search"></i>
+                                <span>Search for Matches</span>
+                            </button>
+                        </div>
+                    </form>
+                    <div id="search-status-message" class="mt-6 text-center"></div>
+                    <div id="search-results-loader" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-6" style="display: none;">
+                        <div class="aspect-square bg-gray-300 rounded-lg animate-pulse"></div>
+                        <div class="aspect-square bg-gray-300 rounded-lg animate-pulse"></div>
+                        <div class="aspect-square bg-gray-300 rounded-lg animate-pulse hidden sm:block"></div>
+                        <div class="aspect-square bg-gray-300 rounded-lg animate-pulse hidden md:block"></div>
+                        <div class="aspect-square bg-gray-300 rounded-lg animate-pulse hidden lg:block"></div>
+                    </div>
+                    <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-6">
+                        </div>
+                    <p id="no-matches-message" style="display: none;" class="text-center text-gray-color py-10 text-lg">
+                        <i class="fas fa-meh fa-3x mb-4 text-gray-400"></i><br>
+                        No matching images found in this album.
+                    </p>
+                </section>
+
+                <section id="album-detail-view" class="view-section" style="display: none;">
+                    </section>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 space-y-3 z-[100]">
+        </div>
+
+    <footer class="bg-dark-color text-white mt-16">
+        <div class="container mx-auto px-4 py-8 text-center">
+            <p>&copy; <span id="currentYear"></span> Aadishree. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/albums.js"></script>
+    <script>
+        // Script from V2 for basic nav and profile dropdown (if not handled by albums.js)
+        // It's generally better if albums.js handles all dynamic interactions.
+        // If albums.js is comprehensive, this inline script might not be strictly necessary
+        // or could be merged into albums.js.
+        const hamburger_v2 = document.getElementById('hamburger'); // Renamed to avoid conflict if albums.js also has 'hamburger'
+        const mobileNavLinks_v2 = document.getElementById('mobileNavLinks');
+        const profileDropdownButton_v2 = document.getElementById('profileDropdownButton');
+        const profileDropdownMenu_v2 = document.getElementById('profileDropdownMenu');
+
+        if (hamburger_v2 && mobileNavLinks_v2) {
+            hamburger_v2.addEventListener('click', () => {
+                const isActive = mobileNavLinks_v2.classList.toggle('active'); // 'active' class needs to be defined in your V2 CSS to show/hide
+                
+                // Toggle display style for mobileNavLinks directly if 'active' class isn't enough
+                mobileNavLinks_v2.style.display = isActive ? 'block' : 'none';
+
+
+                // Toggle icons inside hamburger
+                const openIcon = hamburger_v2.querySelector('.icon-menu-open');
+                const closeIcon = hamburger_v2.querySelector('.icon-menu-close');
+                if (openIcon && closeIcon) {
+                    openIcon.style.display = isActive ? 'none' : 'inline-block';
+                    closeIcon.style.display = isActive ? 'inline-block' : 'none';
+                }
+            });
+        }
+
+        if (profileDropdownButton_v2 && profileDropdownMenu_v2) {
+            profileDropdownButton_v2.addEventListener('click', (event) => {
+                event.stopPropagation(); 
+                const isActive = profileDropdownMenu_v2.classList.toggle('active'); // 'active' class needs to be defined for visibility
+                 profileDropdownMenu_v2.style.display = isActive ? 'block' : 'none'; // Or manage display directly
+            });
+
+            document.addEventListener('click', (event) => {
+                if (profileDropdownMenu_v2 && !profileDropdownMenu_v2.contains(event.target) && !profileDropdownButton_v2.contains(event.target)) {
+                    profileDropdownMenu_v2.classList.remove('active');
+                    profileDropdownMenu_v2.style.display = 'none'; // Ensure it's hidden
+                }
+            });
+        }
+        // End of V2 specific inline script for nav/profile
+
+
+        // Script for current year (from V1)
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html> 

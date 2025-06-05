@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - Aadishree</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <header class="header-main">
+    <div class="container header-container">
+        <nav class="header-nav">
+            <div class="header-logo">
+                <a href="index.html">
+                    <img src="uploads/Screenshot%202025-06-03%20110359.png" alt="Logo" />
+                </a>
+            </div>
+            <div class="nav-links-desktop" id="navLinks">
+                <a href="index.html" class="nav-link-item">Home</a>
+                <a href="features.html" class="nav-link-item">Features</a>
+                <a href="albums.html" class="nav-link-item">Albums</a>
+                <a href="pricing.html" class="nav-link-item">Pricing</a>
+                <a href="contact.html" class="nav-link-item active">Contact Us</a>
+            </div>
+            <div class="auth-links-desktop">
+                <a href="login.html" id="loginBtnNav" class="btn btn-secondary btn-sm">Log In</a>
+                <a href="signin.html" id="signinBtnNav" class="btn btn-primary btn-sm">Sign Up</a>
+                <div id="profileDropdownContainer" class="profile-dropdown" style="display: none;">
+                    <button id="profileDropdownButton" class="profile-dropdown-button" aria-expanded="false" aria-haspopup="true">
+                        <span id="profileInitials" class="profile-initials-text">JD</span>
+                    </button>
+                    <div id="profileDropdownMenu" class="profile-dropdown-menu hidden">
+                        <div class="profile-dropdown-header">
+                            <div class="profile-user-info">
+                                <div class="profile-initials-avatar">
+                                    <span id="dropdownProfileInitials">JD</span>
+                                </div>
+                                <div>
+                                    <p id="dropdownUserName" class="profile-user-name">John Doe</p>
+                                    <p id="dropdownUserEmail" class="profile-user-email">john.doe@example.com</p>
+                                </div>
+                            </div>
+                            <a href="#" id="manageAccountLink" class="profile-manage-link">Manage your Account (soon)</a>
+                        </div>
+                        <div class="profile-dropdown-footer">
+                            <a href="#" id="logoutBtnDropdown" class="profile-dropdown-item logout-link">
+                                <i class="fas fa-sign-out-alt icon-prefix"></i>Sign out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hamburger-menu-container">
+                <button id="hamburger" aria-label="Open menu" aria-expanded="false" class="hamburger-button">
+                    <i class="fas fa-bars icon-menu-open"></i>
+                    <i class="fas fa-times icon-menu-close" style="display:none;"></i>
+                </button>
+            </div>
+        </nav>
+    </div>
+    <div class="mobile-nav-menu hidden" id="mobileNavLinksMenu">
+        <a href="index.html" class="nav-link-item-mobile">Home</a>
+        <a href="features.html" class="nav-link-item-mobile">Features</a>
+        <a href="albums.html" class="nav-link-item-mobile">Albums</a>
+        <a href="pricing.html" class="nav-link-item-mobile">Pricing</a>
+        <a href="contact.html" class="nav-link-item-mobile active">Contact Us</a>
+        <div class="mobile-auth-section">
+            <a href="login.html" id="loginBtnNavMobile" class="btn btn-secondary btn-sm btn-full-width btn-margin-bottom">Log In</a>
+            <a href="signin.html" id="signinBtnNavMobile" class="btn btn-primary btn-sm btn-full-width btn-margin-bottom">Sign Up</a>
+            <div id="profileContainerMobile" style="display:none;">
+                <div class="profile-user-info-mobile">
+                    <div class="profile-initials-avatar-sm">
+                       <span id="profileInitialsMobile">JD</span>
+                    </div>
+                    <div>
+                       <p id="userNameMobile" class="profile-user-name-sm">John Doe</p>
+                       <p id="userEmailMobile" class="profile-user-email-sm">john.doe@example.com</p>
+                    </div>
+                </div>
+                <a href="#" id="logoutBtnNavMobile" class="btn btn-danger-outline btn-sm btn-full-width">
+                    <i class="fas fa-sign-out-alt icon-prefix"></i>Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+  <div class="container-contact">
+        <div>
+            <h1 class="header-title">Contact Us</h1>
+            <p class="header-subtitle">We would love to hear from you!</p>
+        </div>
+        
+        <div class="contact-container">
+            <div class="contact-info">
+                <div class="info-item">
+                    <div class="icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="details">
+                        <h3>Address</h3>
+                        <p>123 Business Road, Suite 100<br>San Francisco, CA 94103</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="details">
+                        <h3>Phone</h3>
+                        <p>+1 (555) 123-4567</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="details">
+                        <h3>Email</h3>
+                        <p>info@company.com</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="details">
+                        <h3>Working Hours</h3>
+                        <p>Monday - Friday: 9:00 AM - 5:00 PM<br>Saturday - Sunday: Closed</p>
+                    </div>
+                </div>
+                
+                <div class="social-media">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-form">
+                <h2>Send Us a Message</h2>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Your phone number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" placeholder="Subject of your message">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Your message" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            <h2>Find Us On The Map</h2>
+            <div class="map-placeholder">
+                <div class="map-image">Map image would go here</div>
+            </div>
+        </div>
+    </div>
+
+  <footer><p>&copy; <span id="currentYear"></span> Aadishree. All rights reserved.</p></footer>
+   <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+  <script src="js/script.js"></script>
+  <script src="js/gloabal_auth.js"></script>
+</body>
+</html>

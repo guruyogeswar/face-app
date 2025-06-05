@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> <style>
+        /* Added basic style for error messages */
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="forms-wrapper">
+        <div class="forms-container">
+            <div class="form-container login-container" id="login-form-container"> <br>
+                <br>
+                <br>
+                <br>
+                <h1>Log In</h1>
+                <br>
+                <div class="social-login">
+                    <button class="social-btn google"><i class="fab fa-google"></i> Sign in with Google</button> <button class="social-btn apple"><i class="fab fa-apple"></i> Sign in with Apple</button> </div>
+                <div class="divider">or</div> <form id="actual-login-form"> <div class="input-group">
+                        <label for="login-email">Email (Username)</label> <input type="text" id="login-email" placeholder="Enter your username" required> </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label> <input type="password" id="login-password" placeholder="Enter your password" required> </div>
+                    <div class="form-footer">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember-me"> <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a> </div>
+                    <button type="submit" id="login-btn" class="btn-sign">Log In</button> </form>
+                <div id="login-error-message" class="error-message" style="display: none;"></div> <div class="switch-form">
+                    Don't have an account? <a href="signin.html" id="switch-to-signup">Sign up</a> </div>
+                <br><br><br><br>
+            </div>
+        </div>
+    </div>            
+    <footer class="logsign"><br></footer> <script src="js/api.js"></script> <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('actual-login-form');
+            const loginButton = document.getElementById('login-btn');
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const errorMessageDiv = document.getElementById('login-error-message');
+
+            let apiClient;
+            if (typeof APIClient === 'function') {
+                apiClient = new APIClient();
+            } else if (typeof api === 'object' && typeof api.login === 'function') { 
+                apiClient = api;
+            } else {
+                console.error("APIClient not available. Make sure api.js is loaded correctly and before this script.");
+                errorMessageDiv.textContent = 'Login system error. Please try again later.';
+                errorMessageDiv.style.display = 'block';
+                // Disable the form if API client isn't available to prevent further errors
+                if(loginButton) loginButton.disabled = true;
+                if(emailInput) emailInput.disabled = true;
+                if(passwordInput) passwordInput.disabled = true;
+                return;
+            }
+
+            loginForm.addEventListener('submit', async function(event) {
+                event.preventDefault(); 
+
+                const username = emailInput.value.trim(); 
+                const password = passwordInput.value.trim();
+                
+                errorMessageDiv.style.display = 'none';
+
+                if (!username || !password) {
+                    errorMessageDiv.textContent = 'Please enter both username and password.';
+                    errorMessageDiv.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    loginButton.disabled = true;
+                    loginButton.textContent = 'Logging in...';
+
+                    const response = await apiClient.login(username, password);
+                    
+                    window.location.href = 'albums.html';
+
+                } catch (error) {
+                    errorMessageDiv.textContent = error.message || 'Login failed. Please check your credentials.';
+                    errorMessageDiv.style.display = 'block';
+                } finally {
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'Log In';
+                }
+            });
+        });
+    </script>
+    </body>
+</html>
