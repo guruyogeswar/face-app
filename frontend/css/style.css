@@ -219,7 +219,7 @@ h3 { font-size: 1.75rem; }
     z-index: 1000; /* style.css had 1000, albums.css had 50. 1000 is safer. */
     padding: 1rem 0; /* from style.css */
 }
-.header-container { /* No special styles needed beyond .container */ }
+/* .header-container { No special styles needed beyond .container } */
 
 .header-nav {
     display: flex;
@@ -228,7 +228,7 @@ h3 { font-size: 1.75rem; }
     /* padding-top/bottom handled by header-main */
 }
 .header-logo img { 
-    height: 2.5rem; /* from albums.css */
+    height: 3rem; /* from albums.css */
     /* style.css .logo img had width: 30%, height: 50% - height: 2.5rem is more specific */
 }
 .header-logo span { /* From old .logo span */
@@ -446,7 +446,7 @@ h3 { font-size: 1.75rem; }
 
 /* Hero Section */
 .hero {
-    padding: 6rem 0 4rem;
+    padding: 2rem 0 2rem;
     position: relative;
 }
 .hero::before {
@@ -500,6 +500,93 @@ h3 { font-size: 1.75rem; }
 .feature-icon { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 1.5rem; color: white; font-size: 1.5rem; }
 .feature-card h3 { margin-bottom: 1rem; }
 .feature-card p { color: var(--gray-color-text); }
+
+
+/* About us Section */
+/* ─────────────────────────────────────────────────────────────────────────────
+   About Us Section
+───────────────────────────────────────────────────────────────────────────── */
+
+.About-us {
+  padding: 2rem 0;
+  background-color: white;
+}
+
+.abt-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;     /* adjust as needed */
+  margin: 0 auto;        /* center on page */
+  padding: 0 1rem;       /* small horizontal padding */
+  gap: 2rem;             /* gap between columns */
+}
+
+
+.abt-left {
+  flex: 1 1 30%;         /* take about 30% of available space */
+  min-width: 220px;      /* never collapse   below this width */
+}
+
+.abt-right {
+  flex: 1 1 65%;         /* take about 65% of available space */
+  min-width: 300px;      /* never collapse below this width */
+}
+
+.abt-section-title {
+  color: var(--gray-color-text, #333);
+  font-size: 3rem;            /* adjust heading size as desired */
+  line-height: 1.2;
+  margin: 0;                   /* remove default margin */
+}
+
+.abt-section-subtitle {
+  color: var(--gray-color-text, #555);
+  font-size: 1.125rem;         /* ~18px */
+  line-height: 1.6;
+  margin: 0;
+}
+
+.About-us-page {
+  padding: 2rem 0;
+  background-color: white;
+  padding: 80px 300px;
+}
+
+.abt-page-container {
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;     /* adjust as needed */
+  /* margin: 0 auto;        center on page */
+  padding: 0 1rem;       /* small horizontal padding */
+  gap: 2rem;             /* gap between columns */
+}
+
+
+.abt-page-left {
+  /* flex: 1 1 30%;         take about 30% of available space */
+  min-width: 220px;      /* never collapse   below this width */
+}
+
+.abt-page-right {
+  /* flex: 1 1 65%;         take about 65% of available space */
+  min-width: 300px;      /* never collapse below this width */
+}
+
+.abt-page-section-title {
+  color: var(--gray-color-text, #333);
+  margin: 0 auto;          /* Auto left/right keeps paragraph centered */
+  font-size: 3rem;            /* adjust heading size as desired */
+  line-height: 1.2;
+  margin: 0;                   /* remove default margin */
+}
+
+.abt-page-section-subtitle {
+  color: var(--gray-color-text, #555);
+  font-size: 1.125rem;         /* ~18px */
+  line-height: 1.6;
+  margin: 0;
+}
 
 /* Simpler Section (Techno Features) */
 .simpler-section { background-color: #2d2f38; color: white; text-align: center; padding: 80px 20px; }
