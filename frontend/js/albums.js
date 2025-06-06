@@ -74,7 +74,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let selectedPhotos = new Set(); 
     let lightboxCurrentIndex = -1;
 
-    const API_BASE_URL = ''; 
+    // --- FIX: Both API URLs must be defined here ---
+    const API_BASE_URL = ''; // For calls to our Flask backend (relative path)
+    const ML_API_BASE_URL = 'http://127.0.0.1:8080'; // For calls to the external ML API
 
     function showToast(message, type = 'info') { 
         if (!DOMElements.toastContainer) {
@@ -185,13 +187,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (response.ok) {
                 const data = await response.json();
                 if (data.valid && data.username) {
-                    const userData = { username: data.username, email: data.email || storedUserEmail }; // Use email from verify if present
+                    const userData = { username: data.username, email: data.email || storedUserEmail }; 
                     updateUserNav(true, userData);
                     if (DOMElements.loginPromptDiv) DOMElements.loginPromptDiv.style.display = 'none';
                     if (DOMElements.albumsMainContentDiv) DOMElements.albumsMainContentDiv.style.display = 'block';
                     localStorage.setItem('username', data.username); 
                     if(data.email) localStorage.setItem('userEmail', data.email);
-                    else if (storedUserEmail) localStorage.setItem('userEmail', storedUserEmail); // Retain if not in verify
+                    else if (storedUserEmail) localStorage.setItem('userEmail', storedUserEmail);
                     return true;
                 }
             }
@@ -283,7 +285,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             DOMElements.searchAlbumSelect.innerHTML = '<option value="">-- Select Album --</option>';
         }
 
-
         if (!albums || albums.length === 0) {
             DOMElements.noAlbumsMessage.style.display = 'block';
             DOMElements.albumGrid.style.display = 'none';
@@ -358,10 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/create-album`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ name: albumName }) 
             });
             const result = await response.json();
@@ -587,30 +585,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                  const response = await fetch(`${API_BASE_URL}/api/albums/${currentAlbumId}/photos/delete`, {
                     method: 'POST', 
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ photo_ids: photosToDelete }) 
                 });
 
-                const responseText = await response.text(); // Always get text first
+                const responseText = await response.text();
                 let result;
                 try {
-                    result = JSON.parse(responseText); // Try to parse as JSON
+                    result = JSON.parse(responseText);
                 } catch (e) {
-                    // If parsing fails, it means the response was not JSON (e.g., HTML error page)
                     console.error("Failed to parse server response as JSON. Raw response:", responseText);
-                    // Display a generic error, or try to extract info from HTML if possible (more complex)
                     throw new Error(`Server returned non-JSON response (status ${response.status}). Check console for details.`);
                 }
 
-                if (!response.ok) { // Check HTTP status code after attempting to parse
+                if (!response.ok) {
                     throw new Error(result.error || result.message || `Failed to delete photos (status ${response.status}).`);
                 }
                 
                 showToast(result.message || `${photosToDelete.length} photo(s) processed.`, "success");
-                // Optionally display specific errors from backend if provided in result.errors
+                
                 if(result.errors && result.errors.length > 0){
                     result.errors.forEach(err => showToast(`Error deleting ${err.photo_id}: ${err.error}`, "error"));
                 }
@@ -646,63 +639,94 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function handlePhotoUpload(files, albumId, albumName) {
-        // ... (Keep existing handlePhotoUpload function, it's already quite robust)
-        // Ensure it calls loadAlbumDetailView(albumId, albumName) on success to refresh
-         if (!files || files.length === 0) return;
+        if (!files || files.length === 0) return;
         const token = localStorage.getItem('authToken');
         if (!token) {
             showToast("You must be logged in to upload photos.", "error");
             return;
         }
 
-        const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-            formData.append('files', files[i]); 
-        }
-        formData.append('album', albumId); 
-
-        showToast(`Uploading ${files.length} photo(s) to "${albumName}"...`, "info");
         const uploadButton = DOMElements.albumDetailView?.querySelector('#uploadToAlbumBtn');
         if (uploadButton) {
             uploadButton.disabled = true;
-            uploadButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span class="ml-2">Uploading...</span>`;
+            uploadButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span class="ml-2">Uploading 0/${files.length}...</span>`;
         }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/upload`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`},
-                body: formData
-            });
+        const successfulUrls = [];
+        let errorCount = 0;
 
-            const result = await response.json();
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('album', albumId);
 
-            if (response.ok) {
-                let successCount = result.successful_uploads ? result.successful_uploads.length : 0;
-                if (successCount > 0) {
-                    showToast(`${successCount} photo(s) uploaded successfully to "${albumName}".`, "success");
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/upload-single-file`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    successfulUrls.push(result.url);
+                    if (uploadButton) {
+                         uploadButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span class="ml-2">Uploading ${i + 1}/${files.length}...</span>`;
+                    }
+                } else {
+                    errorCount++;
+                    showToast(`Failed to upload ${file.name}: ${result.error || 'Server error'}`, "error");
                 }
-                if (result.upload_errors && result.upload_errors.length > 0) {
-                    result.upload_errors.forEach(err => showToast(`Upload error: ${err.file || 'A file'} - ${err.error || 'Unknown error'}`, "error"));
-                }
-                if(successCount === 0 && (!result.upload_errors || result.upload_errors.length === 0)){
-                    showToast("No photos were uploaded. Please check the files.", "info");
-                }
-                loadAlbumDetailView(albumId, albumName); 
-            } else {
-                throw new Error(result.error || "Upload failed due to a server error.");
+            } catch (error) {
+                errorCount++;
+                showToast(`Failed to upload ${file.name}: ${error.message}`, "error");
             }
-        } catch (error) {
-            console.error("Error uploading photos:", error);
-            showToast(`Photo upload failed: ${error.message}`, "error");
-        } finally {
+        }
+
+        if (successfulUrls.length > 0) {
+            showToast(`All files uploaded. Now processing faces... This may take a moment.`, "info");
             if (uploadButton) {
-                uploadButton.disabled = false;
-                uploadButton.innerHTML = `<i class="fas fa-upload"></i><span class="ml-2">Upload Photos</span>`;
+                uploadButton.innerHTML = `<i class="fas fa-brain"></i><span class="ml-2">Processing Faces...</span>`;
             }
-            const uploadPhotosInput = DOMElements.albumDetailView?.querySelector('#uploadPhotosInput');
-            if (uploadPhotosInput) uploadPhotosInput.value = null;
+
+            try {
+                const embedding_filename = `${albumId}_embeddings.json`;
+                const payload = new FormData();
+                successfulUrls.forEach(url => payload.append('urls', url));
+                payload.append('embedding_file', embedding_filename);
+                
+                const mlResponse = await fetch(`${ML_API_BASE_URL}/add_embeddings_from_urls/`, {
+                    method: 'POST',
+                    body: payload,
+                });
+
+                if (!mlResponse.ok) {
+                    const mlError = await mlResponse.json();
+                    throw new Error(mlError.detail || "Face processing failed on the ML server.");
+                }
+                
+                showToast("Face processing complete!", "success");
+
+            } catch (error) {
+                console.error("Error during ML batch processing:", error);
+                showToast(`Face processing failed: ${error.message}`, "error");
+            }
         }
+
+        if (uploadButton) {
+            uploadButton.disabled = false;
+            uploadButton.innerHTML = `<i class="fas fa-upload"></i><span class="ml-2">Upload Photos</span>`;
+        }
+
+        if (errorCount > 0) {
+            showToast(`${errorCount} file(s) failed to upload.`, 'error');
+        }
+
+        loadAlbumDetailView(albumId, albumName);
+        const uploadPhotosInput = DOMElements.albumDetailView?.querySelector('#uploadPhotosInput');
+        if (uploadPhotosInput) uploadPhotosInput.value = null;
     }
 
     function openLightbox(index) {
@@ -764,7 +788,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     DOMElements.faceSearchForm?.addEventListener('submit', async (e) => {
-        // ... (Keep existing faceSearchForm submit handler)
         e.preventDefault();
         if(!DOMElements.searchAlbumSelect || !DOMElements.faceSearchFileInput || 
            !DOMElements.searchStatusMessage || !DOMElements.searchResultsLoader || 
@@ -814,20 +837,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 body: formData,
                  headers: { 'Authorization': `Bearer ${token}` }
             });
-            const result = await response.json(); // Assume find-matches will return JSON
-            if (!response.ok) throw new Error(result.error || "Face search request failed due to a server issue.");
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || result.details || "Face search request failed.");
 
             if(DOMElements.searchStatusMessage) DOMElements.searchStatusMessage.textContent = 'Search complete!';
+            
             if (result.matches && result.matches.length > 0) {
-                result.matches.forEach(matchUrl => {
+                result.matches.forEach(match => { 
                     const imgContainer = document.createElement('div');
-                    imgContainer.className = 'aspect-square bg-gray-100 rounded-lg overflow-hidden shadow-sm';
-                    imgContainer.innerHTML = `<img src="${matchUrl}" alt="Matching image" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/300x300/e0e0e0/777?text=Match+Error';">`;
+                    imgContainer.className = 'aspect-square bg-gray-100 rounded-lg overflow-hidden shadow-sm group';
+                    
+                    imgContainer.innerHTML = `
+                        <img src="${match.url}" alt="Matching image" class="w-full h-full object-cover transition-transform group-hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/300x300/e0e0e0/777?text=Match+Error';">
+                        <div class="absolute bottom-0 left-0 right-0 p-1 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-colors text-white text-xs text-center">
+                            Score: ${match.score.toFixed(2)}
+                        </div>
+                    `;
+                    
                     if(DOMElements.searchResultsGrid) DOMElements.searchResultsGrid.appendChild(imgContainer);
                 });
             } else {
                 if(DOMElements.noMatchesMessage) DOMElements.noMatchesMessage.style.display = 'block';
-                if(DOMElements.searchStatusMessage) DOMElements.searchStatusMessage.textContent = 'No matches found.';
+                if(DOMElements.searchStatusMessage) DOMElements.searchStatusMessage.textContent = result.message || 'No matches found.';
             }
         } catch (error) {
             console.error("Error finding matches:", error);

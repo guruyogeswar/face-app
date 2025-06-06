@@ -19,17 +19,9 @@ import boto3
 from botocore.exceptions import ClientError
 
 # --- Configuration ---
-# Assuming config.py is in the parent directory of the 'docker' folder
-# If running locally, you might need to adjust this path
-R2_CONFIG = {
-    "endpoint_url": "https://7f6e79e9b8402a59fa23c2576cfa5195.r2.cloudflarestorage.com",
-    "bucket_name": "testing-storage",
-    "public_base_url": "https://pub-3b6ed244985a49a1b3add562e2f00617.r2.dev",
-    "aws_access_key_id": "6c251710b7d1334023b3ad08588b2fd1",
-    "aws_secret_access_key": "64aa1855f26617884501faff4e56d5ca527b1bbdabb2d2db6cc0506a686964fe",
-}
+from config import R2_CONFIG
 
-FACENET_MODEL_PATH = 'docker/models/facenet_keras.h5' # Assuming model is in the same directory when running
+FACENET_MODEL_PATH = 'facenet_keras.h5'
 EMBEDDINGS_DIR = "data/embeddings"  # Directory for temporary local storage
 os.makedirs(EMBEDDINGS_DIR, exist_ok=True)
 
@@ -68,13 +60,14 @@ def load_resources():
         print(f"❌ ERROR: Failed to initialize R2/S3 client: {e}")
 
 
-# --- Core Functions ---
+# --- Core Functions (No changes needed here) ---
 def extract_face(image_bytes: bytes, required_size=(160, 160)):
     try:
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         pixels = np.asarray(image)
         results = mtcnn_detector.detect_faces(pixels)
-        if not results: return None
+        if not results:
+            return None
         x1, y1, width, height = results[0]['box']
         x1, y1 = abs(x1), abs(y1)
         x2, y2 = x1 + width, y1 + height
@@ -93,26 +86,37 @@ def get_embedding(face_pixels: np.ndarray) -> np.ndarray:
     embedding = facenet_model.predict(sample)
     return embedding[0]
 
-# --- API Endpoints ---
+# --- API Endpoints (Modified for R2 Storage) ---
 
 @app.post("/add_embeddings_from_urls/")
-async def add_embeddings_from_urls(urls: List[str] = Form(...), embedding_file: str = Form(...)):
+async def add_embeddings_from_urls(
+    urls: List[str] = Form(...),
+    embedding_file: str = Form(...)
+):
+    """
+    Generates embeddings and saves them to a JSON file in R2 storage.
+    """
     if not facenet_model or not s3_client:
         raise HTTPException(status_code=503, detail="A core service (ML model or Storage) is not available.")
-    
+
     local_temp_path = os.path.join(EMBEDDINGS_DIR, embedding_file)
     url_embedding_map = []
 
+    # 1. Download existing embeddings file from R2 if it exists
     try:
+        print(f"Downloading {embedding_file} from R2 bucket...")
         s3_client.download_file(R2_CONFIG["bucket_name"], embedding_file, local_temp_path)
         with open(local_temp_path, 'r') as f:
             url_embedding_map = json.load(f)
+        print("Successfully loaded existing embeddings.")
     except ClientError as e:
         if e.response['Error']['Code'] == '404':
+            print(f"Info: {embedding_file} not found in R2. A new file will be created.")
             url_embedding_map = []
         else:
             raise HTTPException(status_code=500, detail=f"R2 download error: {e}")
 
+    # 2. Process new URLs and generate embeddings
     def process_url(url: str):
         try:
             response = requests.get(url, timeout=20)
@@ -121,36 +125,52 @@ async def add_embeddings_from_urls(urls: List[str] = Form(...), embedding_file: 
             if face_pixels is None: return None
             embedding = get_embedding(face_pixels)
             normalized_embedding = in_encoder.transform([embedding])[0]
+            print(f"  [SUCCESS] Embedding created for {url}")
             return {"url": url, "embedding": normalized_embedding.tolist()}
-        except Exception:
+        except Exception as e:
+            print(f"  [ERROR] Processing {url}: {e}")
             return None
 
+    new_embeddings = []
     with ThreadPoolExecutor(max_workers=8) as executor:
         results = executor.map(process_url, urls)
         new_embeddings = [res for res in results if res]
 
+    # 3. Append new embeddings and upload the updated file back to R2
     if new_embeddings:
         url_embedding_map.extend(new_embeddings)
         with open(local_temp_path, 'w') as f:
             json.dump(url_embedding_map, f, indent=4)
+        
         try:
+            print(f"Uploading updated {embedding_file} to R2...")
             s3_client.upload_file(local_temp_path, R2_CONFIG["bucket_name"], embedding_file)
+            print("✅ Upload successful.")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload embeddings to R2: {e}")
         finally:
             if os.path.exists(local_temp_path):
                 os.remove(local_temp_path)
     
-    return {"message": "Embeddings processed.", "added_count": len(new_embeddings)}
+    return {
+        "message": f"Successfully updated {embedding_file} with {len(new_embeddings)} new embeddings.",
+        "total_embeddings": len(url_embedding_map)
+    }
 
 @app.post("/find_similar_faces/")
-async def find_similar_faces(file: UploadFile = File(...), embedding_file: str = Form(...), threshold: float = Form(0.55)):
+async def find_similar_faces(
+    file: UploadFile = File(...),
+    embedding_file: str = Form(...),
+    threshold: float = Form(0.55)
+):
     if not facenet_model or not s3_client:
-        raise HTTPException(status_code=503, detail="A core service is not available.")
-    
+        raise HTTPException(status_code=503, detail="A core service (ML model or Storage) is not available.")
+
     local_temp_path = os.path.join(EMBEDDINGS_DIR, embedding_file)
-    
+
+    # 1. Download the required embeddings file from R2
     try:
+        print(f"Downloading {embedding_file} from R2 for search...")
         s3_client.download_file(R2_CONFIG["bucket_name"], embedding_file, local_temp_path)
     except ClientError as e:
         if e.response['Error']['Code'] == '404':
@@ -160,9 +180,11 @@ async def find_similar_faces(file: UploadFile = File(...), embedding_file: str =
 
     with open(local_temp_path, 'r') as f:
         url_embedding_map = json.load(f)
-    if os.path.exists(local_temp_path):
-        os.remove(local_temp_path)
     
+    if os.path.exists(local_temp_path):
+        os.remove(local_temp_path) # Clean up immediately
+
+    # 2. Process input image and find matches
     input_bytes = await file.read()
     face_pixels = extract_face(input_bytes)
     if face_pixels is None:
@@ -178,48 +200,13 @@ async def find_similar_faces(file: UploadFile = File(...), embedding_file: str =
             results.append({"url": item["url"], "score": float(similarity)})
 
     results.sort(key=lambda x: x["score"], reverse=True)
-    
-    # --- FIX: Removed the [:10] slice to return all matches ---
-    return {"match_count": len(results), "matches": results}
+    return {"match_count": len(results), "matches": results[:10]} # Return top 10 matches
 
-
-@app.post("/remove_embedding/")
-async def remove_embedding(embedding_file: str = Form(...), image_url: str = Form(...)):
-    if not s3_client:
-        raise HTTPException(status_code=503, detail="Storage service not available.")
-        
-    local_temp_path = os.path.join(EMBEDDINGS_DIR, embedding_file)
-    url_embedding_map = []
-    
-    try:
-        s3_client.download_file(R2_CONFIG["bucket_name"], embedding_file, local_temp_path)
-        with open(local_temp_path, 'r') as f:
-            url_embedding_map = json.load(f)
-    except ClientError:
-        return {"message": "Embedding file not found, nothing to remove."}
-
-    original_count = len(url_embedding_map)
-    updated_embedding_map = [item for item in url_embedding_map if item.get("url") != image_url]
-    
-    if len(updated_embedding_map) == original_count:
-        if os.path.exists(local_temp_path): os.remove(local_temp_path)
-        return {"message": "Image URL not found in embeddings, no changes made."}
-
-    with open(local_temp_path, 'w') as f:
-        json.dump(updated_embedding_map, f, indent=4)
-    try:
-        s3_client.upload_file(local_temp_path, R2_CONFIG["bucket_name"], embedding_file)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to upload updated embeddings to R2: {e}")
-    finally:
-        if os.path.exists(local_temp_path):
-            os.remove(local_temp_path)
-        
-    return {"message": f"Successfully removed embedding for {image_url}."}
 
 @app.get("/")
 def root():
     return {"status": "✅ API Running", "model_loaded": facenet_model is not None}
+
 
 if __name__ == "__main__":
     uvicorn.run("main_fastapi:app", host="0.0.0.0", port=8080, reload=True)
